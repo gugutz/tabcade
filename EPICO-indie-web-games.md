@@ -6,7 +6,7 @@
 
 1. **Dona:** quando o pi5 voltar, avisar para comparar o `indie.json` de lá com o do GitHub (`gugutz/tau-control`, commit `4fa1db5`, 31/10). Se houver jogos novos, viram manifestos.
 2. **Dona:** escolher o nome e registrar o domínio. Depois: renomear a pasta, trocar `SITE_NAME` em `src/games.ts`, `site` em `astro.config.mjs`, `public/robots.txt` e `name` em `package.json`/`wrangler.jsonc`.
-3. **Dona:** Workers Builds: a dona ligou em 2026-11-19, mas o push `2dc8c1e` não gerou build (sem check do Cloudflare no commit, ao contrário do botanolapis; versão no ar continua a manual `cc28d06f`). Conferir em Worker `tabcade` > Settings > Build se o repositório aparece ligado e se o app do Cloudflare no GitHub tem acesso ao `tabcade`. Teste: `gh api repos/gugutz/tabcade/commits/HEAD/check-runs` deve mostrar `Workers Builds: tabcade`.
+3. Workers Builds: repositório vinculado pela dona em 2026-11-19 (a 1ª tentativa não tinha salvo). Todo push na `main` deve publicar em https://tabcade.gugutz.workers.dev; conferir com `gh api repos/gugutz/tabcade/commits/HEAD/check-runs` (deve mostrar `Workers Builds: tabcade`).
 4. **Dona:** achar os autores de `games/author1` (Cruising Bones) e `games/author2` (Grav Wars) e os posts do Reddit de todos. O Reddit é bloqueado no navegador do app e a API pede aprovação, então essa busca é manual.
 5. Preencher `ads` e `purchases` (todos `unknown`). Capas: só com permissão.
 6. Discovery: script de fila (itch.io RSS + Show HN automáticos; Reddit por link colado à mão).
