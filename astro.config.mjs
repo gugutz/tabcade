@@ -1,8 +1,8 @@
 import { defineConfig } from 'astro/config';
 
-// Static output. Domain not chosen yet: update `site` and wrangler.jsonc when it is.
+// Static output. Provisional workers.dev address until a domain is chosen.
 export default defineConfig({
-  site: 'https://example.com',
+  site: 'https://tabcade.gugutz.workers.dev',
   trailingSlash: 'never',
   build: { format: 'file' },
 });
