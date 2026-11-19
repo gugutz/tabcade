@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/Card.astro';
+import { developers, games } from '../../games';
+
+export const getStaticPaths = () => developers.map((dev) => ({ params: { dev: dev.id }, props: { dev } }));
+const { dev } = Astro.props as { dev: (typeof developers)[number] };
+const list = games.filter((g) => g.devId === dev.id);
+---
+<Base title={dev.name} description={`Browser games by ${dev.name}.`}>
+  <p><a href="/">← Catalog</a></p>
+  <h1>{dev.name}</h1>
+  {(dev.url || dev.links) && (
+    <ul class="chips links">
+      {dev.url && <li><a href={dev.url} rel="noopener">{new URL(dev.url).hostname}</a></li>}
+      {dev.links?.map((l) => <li><a href={l} rel="noopener">{new URL(l).hostname.replace(/^www\./, '')}</a></li>)}
+    </ul>
+  )}
+  <p class="muted">{list.length} {list.length === 1 ? 'game' : 'games'}</p>
+  <ul class="grid">{list.map((g) => <Card game={g} />)}</ul>
+</Base>
+
+<style>
+  .links { margin-bottom: 8px; }
+</style>

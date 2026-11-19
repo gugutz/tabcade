@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Card from '../components/Card.astro';
+import { games } from '../games';
+---
+<Base title="My library" description="Games you saved to play later. Stored only in this browser.">
+  <h1>My library</h1>
+  <p class="muted">Saved only in this browser (no account). Clearing site data or switching devices starts it empty.</p>
+  <p id="empty" class="muted">Nothing saved yet. Use “+ Library” on any game in the <a href="/">catalog</a>.</p>
+  <ul class="grid" id="list">{games.map((g) => <Card game={g} />)}</ul>
+</Base>
+
+<script is:inline>
+  // All cards are rendered; show only the saved ones. Re-runs when the library changes.
+  document.addEventListener('library', (e) => {
+    const ids = e.detail;
+    let n = 0;
+    document.querySelectorAll('#list > .card').forEach((c) => { c.hidden = !ids.includes(c.dataset.id); n += !c.hidden; });
+    document.getElementById('empty').hidden = n > 0;
+  });
+</script>
+
+<style>
+  .card[hidden] { display: none; }
+</style>

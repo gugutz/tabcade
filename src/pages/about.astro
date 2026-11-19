@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE_NAME } from '../games';
+---
+<Base title="About" description={`What ${SITE_NAME} is, how games are picked, and how to add or remove one.`}>
+  <h1>About</h1>
+  <p>Lots of small indie browser games, many made with AI tools, get posted on Reddit every day and vanish from the feed in hours. {SITE_NAME} keeps a hand-curated catalog of them so they can still be found later.</p>
+
+  <h2>Credit</h2>
+  <p>Every game belongs to its developer. Each page names the author, links the original post and links the game on the author's own site. The “Play” button always opens the developer's site; games are never embedded or re-hosted here. Screenshots are used only with the author's permission or when the author provides them.</p>
+
+  <h2>How games are picked</h2>
+  <p>Games arrive through pull requests from developers and players, or are found in public posts (itch.io's browser games, Show HN, subreddits). Nothing goes in without a manual review.</p>
+
+  <h2 id="add">Add, fix or remove a game</h2>
+  <p>The catalog is open: each game is a small YAML file in the project's repository, in a folder named after its developer. To add your games, open a pull request with your folder; the format is explained in <a href="https://github.com/gugutz/indie-web-games/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> in the <a href="https://github.com/gugutz/indie-web-games">GitHub repository</a>. Developers can ask for their game to be edited or removed at any time.</p>
+
+  <h2>Privacy</h2>
+  <p>No ads, no login, no cookies. “My library” is stored only in your browser's local storage and never leaves your device. Visit counts, if enabled, use Cloudflare Web Analytics, which does not use cookies.</p>
+</Base>

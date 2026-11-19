@@ -1,0 +1,11 @@
+// Cloudflare Workers, static assets only (no Worker code). Same setup as botanolapis.
+{
+  "name": "indie-web-games",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // /about serves about.html; /about/ redirects to /about.
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

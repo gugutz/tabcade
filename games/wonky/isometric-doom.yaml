@@ -1,0 +1,10 @@
+title: Isometric Doom
+play_url: https://wonky.date/isometric-doom/isometric-doom.html
+description: Play an IWAD's maps in an isometric view, like the automap. The site offers Freedoom if you don't own Doom, and the file never leaves your browser.
+genre: shooter
+tags: [doom, isometric]
+mobile: true
+needs: Doom or Freedoom IWAD
+ads: unknown
+purchases: unknown
+added: 2026-10-31

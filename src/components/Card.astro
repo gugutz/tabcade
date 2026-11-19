@@ -1,0 +1,43 @@
+---
+import { Image } from 'astro:assets';
+import { isAi, searchText, type Game } from '../games';
+interface Props { game: Game }
+const { game: g } = Astro.props;
+---
+<li
+  class="card"
+  data-id={g.id}
+  data-text={searchText(g)}
+  data-genre={g.genre}
+  data-mobile={g.mobile ? '1' : ''}
+  data-multiplayer={g.multiplayer !== 'none' ? '1' : ''}
+  data-ai={isAi(g) ? '1' : ''}
+  data-needs={g.needs ? '1' : ''}
+  data-noads={g.ads === false ? '1' : ''}
+>
+  <a href={`/games/${g.id}`} class="cover">
+    {g.cover ? <Image class="thumb" src={g.cover} alt="" width={480} /> : <span class="thumb" aria-hidden="true">{g.title[0]}</span>}
+    <strong>{g.title}</strong>
+  </a>
+  <span class="muted by">by <a href={`/dev/${g.devId}`}>{g.dev.name}</a> · {g.genreLabel}</span>
+  <ul class="chips">
+    {g.mobile && <li>Mobile</li>}
+    {g.multiplayer !== 'none' && <li>{g.multiplayer === 'local' ? 'Local multiplayer' : 'Online multiplayer'}</li>}
+    {isAi(g) && <li>Made with AI</li>}
+    {g.ads === true && <li>Has ads</li>}
+    {g.needs && <li>Needs {g.needs}</li>}
+  </ul>
+  <div class="actions">
+    <a class="btn" href={g.play_url} target="_blank" rel="noopener">Play ↗</a>
+    <button class="btn ghost" type="button" data-save={g.id} aria-pressed="false">+ Library</button>
+  </div>
+</li>
+
+<style>
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .cover { color: var(--text); text-decoration: none; display: grid; gap: 8px; }
+  .cover strong { font-size: 1.0625rem; }
+  .by { font-size: .875rem; margin-top: -6px; }
+  .actions { display: flex; gap: 8px; margin-top: auto; }
+  .actions .btn { padding: 6px 12px; font-size: .9375rem; }
+</style>

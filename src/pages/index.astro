@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import Card from '../components/Card.astro';
+import { games, genres } from '../games';
+const flags = [['mobile', 'Plays on mobile'], ['multiplayer', 'Multiplayer'], ['ai', 'Made with AI'], ['noneeds', 'Nothing to bring'], ['noads', 'No ads']];
+---
+<Base>
+  <h1>Indie browser games, kept from the feed</h1>
+  <p class="muted">Small web games posted on Reddit and elsewhere, hand-picked and credited to their developers. Free, no login.</p>
+
+  <form class="filters" role="search" onsubmit="return false">
+    <input type="search" name="q" placeholder="Search title, author, tag…" aria-label="Search games" />
+    <select name="genre" aria-label="Genre">
+      <option value="">All genres</option>
+      {genres.map(([id, label]) => <option value={id}>{label}</option>)}
+    </select>
+    {flags.map(([name, label]) => <label><input type="checkbox" name={name} /> {label}</label>)}
+  </form>
+  <p class="muted" aria-live="polite" id="shown">{games.length} games</p>
+
+  <ul class="grid" id="list">{games.map((g) => <Card game={g} />)}</ul>
+  <p id="empty" class="muted" hidden>No game matches these filters.</p>
+</Base>
+
+<script is:inline>
+  (() => {
+    const form = document.querySelector('.filters');
+    const cards = [...document.querySelectorAll('#list > .card')];
+    const apply = () => {
+      const f = new FormData(form);
+      const q = (f.get('q') || '').toLowerCase().trim();
+      let n = 0;
+      for (const c of cards) {
+        const d = c.dataset;
+        const ok = (!q || d.text.includes(q))
+          && (!f.get('genre') || d.genre === f.get('genre'))
+          && (!f.get('mobile') || d.mobile)
+          && (!f.get('multiplayer') || d.multiplayer)
+          && (!f.get('ai') || d.ai)
+          && (!f.get('noneeds') || !d.needs)
+          && (!f.get('noads') || d.noads); // only games confirmed ad-free
+        c.hidden = !ok; // ok may be a string (dataset value)
+        n += ok ? 1 : 0;
+      }
+      document.getElementById('shown').textContent = `${n} of ${cards.length} games`;
+      document.getElementById('empty').hidden = n > 0;
+    };
+    form.addEventListener('input', apply);
+    apply();
+  })();
+</script>
+
+<style>
+  .filters { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 16px 0 4px; }
+  .filters input[type=search], .filters select { font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
+  .filters input[type=search] { flex: 1 1 220px; }
+  .filters label { white-space: nowrap; }
+  .card[hidden] { display: none; }
+</style>

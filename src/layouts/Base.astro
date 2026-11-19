@@ -1,0 +1,99 @@
+---
+import { SITE_NAME } from '../games';
+interface Props { title?: string; description?: string; image?: string }
+const { title, description = 'A free, hand-curated catalog of indie browser games that showed up on Reddit and elsewhere, with credit to every developer.', image } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
+const canonical = new URL(Astro.url.pathname.replace(/(index)?\.html$/, ''), Astro.site);
+const current = canonical.pathname;
+const nav = [['/', 'Catalog'], ['/library', 'My library'], ['/about', 'About']];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
+    <meta name="color-scheme" content="light dark" />
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="/">{SITE_NAME}</a>
+      <nav>
+        {nav.map(([href, label]) => (
+          <a href={href} aria-current={current === href ? 'page' : undefined}>
+            {label}{href === '/library' && <span class="count" data-lib-count></span>}
+          </a>
+        ))}
+      </nav>
+    </header>
+    <main><slot /></main>
+    <footer>
+      Free, no ads, no login, no cookies. Every game belongs to its developer; “Play” opens their site.
+      <a href="/about">Add or remove a game</a>
+    </footer>
+    <script is:inline>
+      // Library = list of game ids in localStorage. Works without it (buttons just do nothing).
+      (() => {
+        const KEY = 'library';
+        const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
+        const write = (ids) => { try { localStorage.setItem(KEY, JSON.stringify(ids)); } catch {} };
+        const paint = () => {
+          const ids = read();
+          document.querySelectorAll('[data-save]').forEach((b) => {
+            const on = ids.includes(b.dataset.save);
+            b.setAttribute('aria-pressed', on);
+            b.textContent = on ? '✓ In library' : '+ Library';
+          });
+          document.querySelectorAll('[data-lib-count]').forEach((s) => (s.textContent = ids.length ? ` (${ids.length})` : ''));
+          document.dispatchEvent(new CustomEvent('library', { detail: ids }));
+        };
+        document.addEventListener('click', (e) => {
+          const b = e.target.closest('[data-save]');
+          if (!b) return;
+          e.preventDefault();
+          const ids = read(), id = b.dataset.save;
+          write(ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]);
+          paint();
+        });
+        window.addEventListener('storage', paint);
+        // After page scripts (rendered after this one) have registered their 'library' listeners.
+        document.addEventListener('DOMContentLoaded', paint);
+      })();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg: #f6f4ef; --card: #ffffff; --text: #1d1b22; --muted: #5d5868; --line: #e2ddd3;
+    --accent: #5b3fd6; --accent-text: #ffffff; --chip: #ece8f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #141219; --card: #1e1b26; --text: #ece9f3; --muted: #a49eb3; --line: #2f2a3a; --accent: #9d86ff; --accent-text: #120f1a; --chip: #2a2438; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: var(--accent); }
+  main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  .top { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; padding: 16px; }
+  .brand { font-weight: 800; font-size: 1.25rem; text-decoration: none; color: var(--text); }
+  .top nav { display: flex; gap: 16px; }
+  .top nav a { color: var(--muted); text-decoration: none; }
+  .top nav a[aria-current] { color: var(--text); font-weight: 600; }
+  footer { max-width: 1100px; margin: 32px auto 0; padding: 16px; color: var(--muted); font-size: .875rem; border-top: 1px solid var(--line); }
+  h1 { font-size: 1.75rem; line-height: 1.2; margin: 8px 0 12px; }
+  .btn { display: inline-block; padding: 10px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-text); cursor: pointer; font-size: 1rem; }
+  .btn.ghost { background: transparent; color: var(--accent); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+  .chips li { background: var(--chip); border-radius: 999px; padding: 2px 10px; font-size: .8125rem; }
+  .muted { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 16px; padding: 0; list-style: none; }
+  .thumb { aspect-ratio: 16 / 9; width: 100%; object-fit: cover; display: grid; place-items: center; background: var(--chip); color: var(--accent); font-size: 2.5rem; font-weight: 800; border-radius: 8px; }
+</style>

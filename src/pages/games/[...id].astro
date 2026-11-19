@@ -1,0 +1,57 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { games, isAi, sourceLabel, yesNo, type Game } from '../../games';
+
+// URL is /games/<developer>/<game>, same as the manifest path.
+export const getStaticPaths = () => games.map((game) => ({ params: { id: game.id }, props: { game } }));
+const { game: g } = Astro.props as { game: Game };
+const aiText = g.ai === undefined ? 'Not stated' : g.ai === false ? 'No' : g.ai === true ? 'Yes' : `Yes: ${g.ai.join(', ')}`;
+const facts = [
+  ['Genre', g.genreLabel],
+  ['Stage', g.stage],
+  ['Mobile / touch', g.mobile ? 'Yes' : 'No'],
+  ['Multiplayer', { none: 'No', local: 'Local', online: 'Online' }[g.multiplayer]],
+  ['Made with AI', aiText],
+  ['Ads in the game', yesNo(g.ads)],
+  ['Purchases', yesNo(g.purchases)],
+  ['You need', g.needs || 'Nothing, runs in the browser'],
+  ['Added', g.added.toISOString().slice(0, 10)],
+].filter(([, v]) => v);
+---
+<Base title={g.title} description={g.description} image={g.cover?.src}>
+  <p><a href="/">← Catalog</a></p>
+  <article class="game">
+    {g.cover ? <Image class="thumb" src={g.cover} alt={`Screenshot of ${g.title}`} width={960} /> : <span class="thumb" aria-hidden="true">{g.title[0]}</span>}
+    <div>
+      <h1>{g.title}</h1>
+      <p class="credit">by <a href={`/dev/${g.devId}`}>{g.dev.name}</a></p>
+      <p>{g.description}</p>
+      <p class="actions">
+        <a class="btn" href={g.play_url} target="_blank" rel="noopener">Play on the developer's site ↗</a>
+        <button class="btn ghost" type="button" data-save={g.id} aria-pressed="false">+ Library</button>
+      </p>
+      <ul class="links">
+        {g.page_url && <li><a href={g.page_url} rel="noopener">Game page</a></li>}
+        {g.source_url && <li><a href={g.source_url} rel="noopener">Original post ({sourceLabel(g.source_url)})</a></li>}
+        {g.source_code && <li><a href={g.source_code} rel="noopener">Source code</a></li>}
+        {g.dev.url && <li><a href={g.dev.url} rel="noopener">{g.dev.name}'s site</a></li>}
+      </ul>
+      <dl>{facts.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>
+      {g.tags.length > 0 && <ul class="chips">{g.tags.map((t) => <li>{t}</li>)}</ul>}
+      <p class="muted small">Something wrong? <a href={`https://github.com/gugutz/indie-web-games/edit/main/games/${g.id}.yaml`}>Edit this game's manifest</a> (<code>games/{g.id}.yaml</code>).</p>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .game { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 760px) { .game { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
+  .credit { font-size: 1.125rem; margin-top: -4px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .links { padding-left: 18px; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
+  dt { color: var(--muted); }
+  dd { margin: 0; }
+  .small { font-size: .875rem; margin-top: 24px; }
+</style>
