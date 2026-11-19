@@ -1,11 +1,18 @@
-// Cloudflare Workers, static assets only (no Worker code). Same setup as botanolapis.
+// Cloudflare Worker: static site from ./dist, plus worker/index.js for /api/* (library sync in D1).
 {
   "name": "tabcade",
   "compatibility_date": "2026-11-01",
+  "main": "worker/index.js",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     // /about serves about.html; /about/ redirects to /about.
     "html_handling": "drop-trailing-slash",
-    "not_found_handling": "404-page"
-  }
+    "not_found_handling": "404-page",
+    // Only /api/* runs the Worker; every other path is served straight from ./dist.
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "tabcade", "database_id": "1cd33eb6-d799-43b0-8bdd-5402964e3c5e" }
+  ]
 }

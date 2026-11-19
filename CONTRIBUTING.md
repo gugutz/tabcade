@@ -8,7 +8,7 @@ games/
     developer.yaml        who you are (once per folder)
     my-first-game.yaml    one file per game
     another-game.yaml
-    my-first-game.webp    optional cover image
+    my-first-game.gif     optional cover (animated GIF of gameplay is best)
 ```
 
 - **Folder name** = your developer or studio handle: lowercase letters, digits and dashes (`guguts`, `slop-studios`). It becomes your page at `/dev/<folder>`.
@@ -42,7 +42,7 @@ ads: false                                 # required: does the game itself show
 purchases: false                           # required: in-game purchases or paid unlocks? true, false or unknown
 needs: a Doom IWAD                         # optional: anything the player must bring (a file, an account...)
 stage: beta                                # optional: prototype, alpha, beta, 1.0...
-cover: my-first-game.webp                  # optional, image in the same folder, 16:9
+cover: my-first-game.gif                   # optional, image in the same folder, 16:9. An animated GIF of gameplay is best (under ~3 MB); PNG/JPG/WebP also work
 added: 2026-11-19                          # required, YYYY-MM-DD (the day you open the PR)
 ```
 

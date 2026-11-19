@@ -5,8 +5,8 @@ import { games, genres } from '../games';
 const flags = [['mobile', 'Plays on mobile'], ['multiplayer', 'Multiplayer'], ['ai', 'Made with AI'], ['noneeds', 'Nothing to bring'], ['noads', 'No ads']];
 ---
 <Base>
-  <h1>Indie browser games, kept from the feed</h1>
-  <p class="muted">Small web games posted on Reddit and elsewhere, hand-picked and credited to their developers. Free, no login.</p>
+  <h1>Browser games that scrolled past.</h1>
+  <p class="muted lede">Small indie games people posted on Reddit and elsewhere, kept here so you can still find them. Every one is free to play in your browser and credited to its developer.</p>
 
   <form class="filters" role="search" onsubmit="return false">
     <input type="search" name="q" placeholder="Search title, author, tag…" aria-label="Search games" />
@@ -14,7 +14,7 @@ const flags = [['mobile', 'Plays on mobile'], ['multiplayer', 'Multiplayer'], ['
       <option value="">All genres</option>
       {genres.map(([id, label]) => <option value={id}>{label}</option>)}
     </select>
-    {flags.map(([name, label]) => <label><input type="checkbox" name={name} /> {label}</label>)}
+    {flags.map(([name, label]) => <label class="toggle"><input type="checkbox" name={name} /> {label}</label>)}
   </form>
   <p class="muted" aria-live="polite" id="shown">{games.length} games</p>
 
@@ -51,9 +51,12 @@ const flags = [['mobile', 'Plays on mobile'], ['multiplayer', 'Multiplayer'], ['
 </script>
 
 <style>
-  .filters { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 16px 0 4px; }
-  .filters input[type=search], .filters select { font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
-  .filters input[type=search] { flex: 1 1 220px; }
-  .filters label { white-space: nowrap; }
-  .card[hidden] { display: none; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 24px 0 8px; }
+  .filters input[type=search], .filters select { font: inherit; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
+  .filters input[type=search] { flex: 1 1 260px; }
+  .lede { max-width: 62ch; font-size: 1.0625rem; }
+  .toggle { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--card); box-shadow: 0 0 0 1px var(--line); cursor: pointer; font-size: .9375rem; }
+  .toggle input { accent-color: var(--coin); margin: 0; }
+  .toggle:has(:checked) { background: var(--coin); color: var(--coin-text); box-shadow: none; }
+  .toggle:has(:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
 </style>

@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import Cover from '../../components/Cover.astro';
 import Base from '../../layouts/Base.astro';
 import { games, isAi, sourceLabel, yesNo, type Game } from '../../games';
 
@@ -22,14 +22,14 @@ const facts = [
 <Base title={g.title} description={g.description} image={g.cover?.src}>
   <p><a href="/">← Catalog</a></p>
   <article class="game">
-    {g.cover ? <Image class="thumb" src={g.cover} alt={`Screenshot of ${g.title}`} width={960} /> : <span class="thumb" aria-hidden="true">{g.title[0]}</span>}
+    <Cover game={g} width={960} alt={`Screenshot of ${g.title}`} />
     <div>
       <h1>{g.title}</h1>
       <p class="credit">by <a href={`/dev/${g.devId}`}>{g.dev.name}</a></p>
       <p>{g.description}</p>
       <p class="actions">
         <a class="btn" href={g.play_url} target="_blank" rel="noopener">Play on the developer's site ↗</a>
-        <button class="btn ghost" type="button" data-save={g.id} aria-pressed="false">+ Library</button>
+        <button class="btn ghost" type="button" data-save={g.id} aria-pressed="false">Save</button>
       </p>
       <ul class="links">
         {g.page_url && <li><a href={g.page_url} rel="noopener">Game page</a></li>}
@@ -47,7 +47,9 @@ const facts = [
 <style>
   .game { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr); }
   @media (min-width: 760px) { .game { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
+  .game h1 { margin-top: 0; }
   .credit { font-size: 1.125rem; margin-top: -4px; }
+  .game :global(.cart .name) { font-size: clamp(2rem, 5vw, 3rem); }
   .actions { display: flex; flex-wrap: wrap; gap: 8px; }
   .links { padding-left: 18px; }
   dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }

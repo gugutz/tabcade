@@ -3,23 +3,42 @@ import Base from '../layouts/Base.astro';
 import Card from '../components/Card.astro';
 import { games } from '../games';
 ---
-<Base title="My library" description="Games you saved to play later. Stored only in this browser.">
+<Base title="My library" description="Games you saved to play later, on any device with your library link.">
   <h1>My library</h1>
-  <p class="muted">Saved only in this browser (no account). Clearing site data or switching devices starts it empty.</p>
-  <p id="empty" class="muted">Nothing saved yet. Use “+ Library” on any game in the <a href="/">catalog</a>.</p>
+  <section id="link" class="link" hidden>
+    <h2>Your library link</h2>
+    <p class="muted">Open this link on another phone or computer to get the same library there. There is no account: anyone with the link can see and change this library, so keep it to yourself and bookmark it.</p>
+    <div class="row">
+      <input id="url" type="text" readonly aria-label="Your library link" />
+      <button class="btn" type="button" id="copy">Copy link</button>
+    </div>
+  </section>
+  <p id="empty" class="muted">Nothing saved yet. Use “Save” on any game in the <a href="/">catalog</a>.</p>
   <ul class="grid" id="list">{games.map((g) => <Card game={g} />)}</ul>
 </Base>
 
 <script is:inline>
   // All cards are rendered; show only the saved ones. Re-runs when the library changes.
   document.addEventListener('library', (e) => {
-    const ids = e.detail;
+    const { ids, key } = e.detail;
+    if (key) {
+      document.getElementById('url').value = `${location.origin}/library#k=${key}`;
+      document.getElementById('link').hidden = false;
+    }
     let n = 0;
     document.querySelectorAll('#list > .card').forEach((c) => { c.hidden = !ids.includes(c.dataset.id); n += !c.hidden; });
     document.getElementById('empty').hidden = n > 0;
   });
+  document.getElementById('copy').addEventListener('click', async (e) => {
+    const url = document.getElementById('url');
+    try { await navigator.clipboard.writeText(url.value); e.target.textContent = 'Copied ✓'; }
+    catch { url.select(); }
+  });
 </script>
 
 <style>
-  .card[hidden] { display: none; }
+  .link { background: var(--card); border-radius: 14px; padding: 4px 18px 18px; margin: 8px 0 24px; box-shadow: 0 0 0 1px var(--line); max-width: 760px; }
+  .link p { max-width: 62ch; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .row input { flex: 1 1 260px; min-width: 0; font: inherit; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); }
 </style>

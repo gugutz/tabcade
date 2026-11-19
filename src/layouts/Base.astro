@@ -20,7 +20,9 @@ const nav = [['/', 'Catalog'], ['/library', 'My library'], ['/about', 'About']];
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#1b1631" />
+    <link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <header class="top">
@@ -39,20 +41,45 @@ const nav = [['/', 'Catalog'], ['/library', 'My library'], ['/about', 'About']];
       <a href="/about">Add or remove a game</a>
     </footer>
     <script is:inline>
-      // Library = list of game ids in localStorage. Works without it (buttons just do nothing).
+      // Library = list of game ids. localStorage is the working copy; with a secret key it is also
+      // synced to /api/library/<key> so the same link opens it on any device. Works offline/without storage.
       (() => {
-        const KEY = 'library';
-        const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
-        const write = (ids) => { try { localStorage.setItem(KEY, JSON.stringify(ids)); } catch {} };
+        const KEY = 'library', LINK = 'libraryKey', DIRTY = 'libraryDirty';
+        const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+        const set = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
+        const read = () => { try { return JSON.parse(get(KEY)) || []; } catch { return []; } };
+        const write = (ids) => set(KEY, JSON.stringify(ids));
+        const newKey = () => btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(18)))).replace(/\+/g, '-').replace(/\//g, '_');
+        const api = (key, ids) => fetch(`/api/library/${key}`, ids ? { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids }) } : {})
+          .then((r) => { if (!r.ok) throw new Error(r.status); return ids ? null : r.json(); });
+        // Push local copy; if it fails, remember so the next visit pushes instead of pulling.
+        const push = (key) => { set(DIRTY, '1'); return api(key, read()).then(() => set(DIRTY, null)).catch(() => {}); };
         const paint = () => {
           const ids = read();
           document.querySelectorAll('[data-save]').forEach((b) => {
             const on = ids.includes(b.dataset.save);
             b.setAttribute('aria-pressed', on);
-            b.textContent = on ? '✓ In library' : '+ Library';
+            b.textContent = on ? 'Saved ✓' : 'Save';
           });
           document.querySelectorAll('[data-lib-count]').forEach((s) => (s.textContent = ids.length ? ` (${ids.length})` : ''));
-          document.dispatchEvent(new CustomEvent('library', { detail: ids }));
+          document.dispatchEvent(new CustomEvent('library', { detail: { ids, key: get(LINK) } }));
+        };
+        const sync = async () => {
+          const linked = new URLSearchParams(location.hash.slice(1)).get('k');
+          if (linked) {
+            // Opened a library link: merge this device's games into it and adopt the key.
+            history.replaceState(null, '', location.pathname + location.search);
+            try {
+              const { ids } = await api(linked);
+              write([...new Set([...ids, ...read()])]);
+              set(LINK, linked);
+              await push(linked);
+            } catch {}
+          } else if (get(LINK)) {
+            if (get(DIRTY)) await push(get(LINK));
+            else try { write((await api(get(LINK))).ids); } catch {}
+          }
+          paint();
         };
         document.addEventListener('click', (e) => {
           const b = e.target.closest('[data-save]');
@@ -60,40 +87,56 @@ const nav = [['/', 'Catalog'], ['/library', 'My library'], ['/about', 'About']];
           e.preventDefault();
           const ids = read(), id = b.dataset.save;
           write(ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]);
+          if (!get(LINK)) set(LINK, newKey());
           paint();
+          push(get(LINK));
         });
         window.addEventListener('storage', paint);
         // After page scripts (rendered after this one) have registered their 'library' listeners.
-        document.addEventListener('DOMContentLoaded', paint);
+        document.addEventListener('DOMContentLoaded', () => { paint(); sync(); });
       })();
     </script>
   </body>
 </html>
 
 <style is:global>
+  /* Fonts: Bricolage Grotesque + Atkinson Hyperlegible, both SIL OFL, self-hosted (no third-party requests). */
+  @font-face { font-family: Bricolage; src: url(/fonts/bricolage.woff2) format('woff2'); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: Atkinson; src: url(/fonts/atkinson-400.woff2) format('woff2'); font-weight: 400; font-display: swap; }
+  @font-face { font-family: Atkinson; src: url(/fonts/atkinson-700.woff2) format('woff2'); font-weight: 700; font-display: swap; }
+  /* Dark only: an arcade at night. Coin yellow = "Play". */
   :root {
-    --bg: #f6f4ef; --card: #ffffff; --text: #1d1b22; --muted: #5d5868; --line: #e2ddd3;
-    --accent: #5b3fd6; --accent-text: #ffffff; --chip: #ece8f9;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #141219; --card: #1e1b26; --text: #ece9f3; --muted: #a49eb3; --line: #2f2a3a; --accent: #9d86ff; --accent-text: #120f1a; --chip: #2a2438; }
+    color-scheme: dark;
+    --bg: #1b1631; --card: #261f44; --raise: #31295a; --text: #f4f0ff; --muted: #b3a9d6; --line: #3c3367;
+    --coin: #ffd23f; --coin-text: #241a00; --link: #9ed8ff; --focus: #9ed8ff;
+    --display: Bricolage, 'Arial Narrow', system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, sans-serif; }
-  a { color: var(--accent); }
-  main { max-width: 1100px; margin: 0 auto; padding: 16px; }
-  .top { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; padding: 16px; }
-  .brand { font-weight: 800; font-size: 1.25rem; text-decoration: none; color: var(--text); }
-  .top nav { display: flex; gap: 16px; }
-  .top nav a { color: var(--muted); text-decoration: none; }
-  .top nav a[aria-current] { color: var(--text); font-weight: 600; }
-  footer { max-width: 1100px; margin: 32px auto 0; padding: 16px; color: var(--muted); font-size: .875rem; border-top: 1px solid var(--line); }
-  h1 { font-size: 1.75rem; line-height: 1.2; margin: 8px 0 12px; }
-  .btn { display: inline-block; padding: 10px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-text); cursor: pointer; font-size: 1rem; }
-  .btn.ghost { background: transparent; color: var(--accent); }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 Atkinson, system-ui, sans-serif;
+    background-image: radial-gradient(circle at 1px 1px, #ffffff0d 1px, transparent 0); background-size: 22px 22px; }
+  a { color: var(--link); text-underline-offset: 3px; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  main { max-width: 1180px; margin: 0 auto; padding: 8px 16px 16px; }
+  .top { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; max-width: 1180px; margin: 0 auto; padding: 18px 16px; }
+  .brand { font: 800 1.5rem/1 var(--display); letter-spacing: -.02em; text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .brand::before { content: ''; width: 14px; height: 22px; border-radius: 3px; background: var(--coin); box-shadow: 4px 4px 0 #ff5d8f; }
+  .top nav { display: flex; gap: 6px; }
+  .top nav a { color: var(--muted); text-decoration: none; padding: 6px 12px; border-radius: 999px; }
+  .top nav a:hover { color: var(--text); }
+  .top nav a[aria-current] { color: var(--text); background: var(--raise); }
+  footer { max-width: 1180px; margin: 48px auto 0; padding: 20px 16px 32px; color: var(--muted); font-size: .875rem; border-top: 1px solid var(--line); }
+  h1, h2 { font-family: var(--display); letter-spacing: -.02em; line-height: 1.05; }
+  h1 { font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 800; margin: 16px 0 12px; }
+  h2 { font-size: 1.5rem; font-weight: 700; margin: 32px 0 8px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 18px; border-radius: 10px; font: 700 1rem/1.2 Atkinson, sans-serif; text-decoration: none; border: 2px solid var(--coin); background: var(--coin); color: var(--coin-text); cursor: pointer; box-shadow: 0 3px 0 #b8901a; }
+  .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #b8901a; }
+  .btn.ghost { background: transparent; color: var(--text); border-color: var(--line); box-shadow: none; }
+  .btn.ghost[aria-pressed=true] { border-color: #ff5d8f; color: #ff9cbc; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
-  .chips li { background: var(--chip); border-radius: 999px; padding: 2px 10px; font-size: .8125rem; }
+  .chips li { background: var(--raise); color: var(--muted); border-radius: 6px; padding: 1px 8px; font-size: .8125rem; }
   .muted { color: var(--muted); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 16px; padding: 0; list-style: none; }
-  .thumb { aspect-ratio: 16 / 9; width: 100%; object-fit: cover; display: grid; place-items: center; background: var(--chip); color: var(--accent); font-size: 2.5rem; font-weight: 800; border-radius: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 20px; padding: 0; list-style: none; }
+  .thumb { aspect-ratio: 16 / 9; width: 100%; object-fit: cover; display: block; border-radius: 10px; background: var(--raise); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
