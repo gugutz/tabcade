@@ -1,6 +1,6 @@
 // Cloudflare Workers, static assets only (no Worker code). Same setup as botanolapis.
 {
-  "name": "indie-web-games",
+  "name": "tabcade",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",

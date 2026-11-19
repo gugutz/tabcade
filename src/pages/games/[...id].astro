@@ -39,7 +39,7 @@ const facts = [
       </ul>
       <dl>{facts.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>
       {g.tags.length > 0 && <ul class="chips">{g.tags.map((t) => <li>{t}</li>)}</ul>}
-      <p class="muted small">Something wrong? <a href={`https://github.com/gugutz/indie-web-games/edit/main/games/${g.id}.yaml`}>Edit this game's manifest</a> (<code>games/{g.id}.yaml</code>).</p>
+      <p class="muted small">Something wrong? <a href={`https://github.com/gugutz/tabcade/edit/main/games/${g.id}.yaml`}>Edit this game's manifest</a> (<code>games/{g.id}.yaml</code>).</p>
     </div>
   </article>
 </Base>

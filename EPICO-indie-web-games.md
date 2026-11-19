@@ -6,7 +6,7 @@
 
 1. **Dona:** quando o pi5 voltar, avisar para comparar o `indie.json` de lá com o do GitHub (`gugutz/tau-control`, commit `4fa1db5`, 31/10). Se houver jogos novos, viram manifestos.
 2. **Dona:** escolher o nome e registrar o domínio. Depois: renomear a pasta, trocar `SITE_NAME` em `src/games.ts`, `site` em `astro.config.mjs`, `public/robots.txt` e `name` em `package.json`/`wrangler.jsonc`.
-3. **Dona:** autorizar o primeiro commit e push para `gugutz/indie-web-games` (repositório público criado em 2026-11-19, vazio). Depois: Workers Builds como no botanolapis.
+3. Ligar o Workers Builds ao repositório (como no botanolapis; feito pela dona no painel do Cloudflare). Primeiro push feito em 2026-11-19 (commit `4fa3cff`).
 4. **Dona:** achar os autores de `games/author1` (Cruising Bones) e `games/author2` (Grav Wars) e os posts do Reddit de todos. O Reddit é bloqueado no navegador do app e a API pede aprovação, então essa busca é manual.
 5. Preencher `ads` e `purchases` (todos `unknown`). Capas: só com permissão.
 6. Discovery: script de fila (itch.io RSS + Show HN automáticos; Reddit por link colado à mão).
@@ -16,7 +16,7 @@
 - 2026-11-19 (3ª entrega): **autores e repositório.**
   - Nenhum jogo é da dona. Pastas: `ag86` (Afterglow 86: autor achado no post do fórum do three.js de 01/10/2026, que virou o `source_url`; o autor diz que usou o Claude, então `ai: [code]`), `wonky` (o site se chama "Wonky's Arcade"; Hellswarm e Isometric Doom), `author1` (Cruising Bones) e `author2` (Grav Wars) com nome "Unknown (site)" e TODO. Moongate, Muliache Games, Slop Studios, amoreo140 e jonesiller mantidos como no tau-control.
   - Busca: web, Hacker News (API do Algolia, nada para nenhum dos 11) e os próprios sites. Reddit não pesquisado: o navegador do app bloqueia reddit.com.
-  - Repositório público `gugutz/indie-web-games` criado (vazio); `git init` local com `origin` apontando para ele. **Sem commit nem push.** README curto; about e página do jogo apontam para o repositório (o "Edit this game's manifest" abre o editor do GitHub no YAML).
+  - Repositório público `gugutz/tabcade` criado (vazio); `git init` local com `origin` apontando para ele. Primeiro commit `4fa3cff` enviado em 2026-11-19 (o `gh` precisou da permissão `workflow`). README curto; about e página do jogo apontam para o repositório (o "Edit this game's manifest" abre o editor do GitHub no YAML).
 
 - 2026-11-19 (2ª entrega): **catálogo por manifestos YAML.**
   - `games/<desenvolvedor>/developer.yaml` + `games/<desenvolvedor>/<jogo>.yaml`. Esquema em `src/content.config.ts` (coleções de conteúdo do Astro, validação com zod, sem dependência nova). Documentação para a comunidade em `CONTRIBUTING.md` (inglês); manter os dois iguais.
