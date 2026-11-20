@@ -13,6 +13,10 @@
 
 ## Estado atual
 
+- 2026-11-20: **Show HN no automático.** 8 jogos do Show HN adicionados à mão (sites e posts lidos; GhostFleet tem AdSense → `ads: true`; Grand Theft PTO: autor diz sem anúncios e feito "dirigindo o Claude"). Scanner `scripts/scan-hn.mjs` + `.github/workflows/scan-hn.yml`: todo dia 06:17 (Brasília) busca Show HN com "game" no título dos últimos 3 dias, descarta ferramentas/lojas/GitHub/Steam/app stores, abre o site (precisa ser HTML 200, sem noindex), e **commita direto na `main`** (decisão da dona: auto add, sem revisão). Nome vem do título da página; gênero/ai/ads são palpites (comentário no topo do YAML). `scripts/hn-seen.txt` guarda todo id visto: apagar o YAML remove o jogo para sempre. Rodar à mão: Actions > Scan Show HN > Run workflow, ou `node scripts/scan-hn.mjs 7`. 1ª rodada (2026-11-20): 11 jogos, commit `458a1a7`. Lixo conhecido que o filtro pega mal: coleções/agregadores, páginas de app pago; revisar de vez em quando.
+  - Reddit: pedido de acesso à API pelo formulário https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=14868593862164 (dona).
+  - Termos do Algolia HN API não lidos.
+
 - 2026-11-20: **links da dona.** Vaelen (AJ Uppal, `games/aj8uppal`, r/aigamedev) adicionado: dados do próprio site (og:description, "browser playtest for desktop"); `ai: true` pelo título do post (post não lido: Reddit bloqueado). **Fable Flight recusado**: é simulador desktop em Rust com download, sem versão web. Varredura automática do Reddit: não, pelos termos (ver Discovery); a dona cola links.
 
 - 2026-11-19 (4ª entrega): **visual novo.** Tema escuro fixo (fliperama à noite; amarelo-ficha no botão Jogar), fontes Bricolage Grotesque + Atkinson Hyperlegible (OFL) servidas pelo próprio site em `public/fonts`. Jogo sem capa ganha uma "etiqueta de cartucho" gerada (cor por gênero, título grande) em `src/components/Cover.astro`. Capa em GIF fica animada (o Astro não converte GIF; testado com um GIF de 2 quadros). Filtros viraram botões de alternar. Conferido no navegador em 1200 px e 375 px, sem rolagem horizontal. 
