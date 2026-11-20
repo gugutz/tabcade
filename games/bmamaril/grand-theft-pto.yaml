@@ -1,0 +1,10 @@
+title: Grand Theft PTO
+play_url: https://labs.ficuscreative.com/grand_theft_pto/
+source_url: https://news.ycombinator.com/item?id=50538765
+description: "The biggest game in 13 years comes out on a Thursday and you have a job. Call in sick, ask for PTO or play after work, without getting caught."
+genre: simulation
+tags: [comedy, single-file]
+ai: [code]  # "built it by directing Claude"
+ads: false  # author: "no sign-up, no ads"
+purchases: false
+added: 2026-11-20

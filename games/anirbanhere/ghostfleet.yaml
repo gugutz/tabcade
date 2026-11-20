@@ -1,0 +1,9 @@
+title: GhostFleet
+play_url: https://ghostfleet.in/play
+source_url: https://news.ycombinator.com/item?id=50569981
+description: "Battleship against WraithAI, an opponent that runs Monte Carlo simulations and probability heatmaps to pick every shot."
+genre: strategy
+tags: [battleship, board-game]
+ads: true  # page loads Google AdSense
+purchases: unknown
+added: 2026-11-20

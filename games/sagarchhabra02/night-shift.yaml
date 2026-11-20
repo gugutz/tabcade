@@ -1,0 +1,9 @@
+title: Night Shift
+play_url: https://play.snowops.net/
+source_url: https://news.ycombinator.com/item?id=50570248
+description: "Your first week on call as a platform engineer: debug Kubernetes incidents recorded on a real cluster, from CrashLoopBackOff to OOMKilled."
+genre: simulation
+tags: [kubernetes, devops, educational]
+ads: unknown
+purchases: unknown
+added: 2026-11-20
