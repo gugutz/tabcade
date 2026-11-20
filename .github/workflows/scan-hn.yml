@@ -1,0 +1,33 @@
+# Daily: add new browser games from Show HN straight to main (Workers Builds then deploys them).
+# To remove a game it added, delete its YAML; scripts/hn-seen.txt keeps it from coming back.
+name: Scan Show HN
+on:
+  schedule:
+    - cron: '17 9 * * *' # 06:17 in Brasília
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: scan-hn
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Scan
+        run: node scripts/scan-hn.mjs > added.md && cat added.md
+      - name: Check the catalog still builds
+        run: npm run build
+      - name: Commit
+        run: |
+          git add games scripts/hn-seen.txt
+          git diff --cached --quiet && exit 0
+          git config user.name "tabcade-scanner"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          n=$(grep -c '^- ' added.md || true)
+          printf 'Add %s games from Show HN\n\n%s\n' "$n" "$(cat added.md)" | git commit -q -F -
+          git push
