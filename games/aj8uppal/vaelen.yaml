@@ -1,0 +1,13 @@
+title: Vaelen
+play_url: https://aj8uppal.github.io/vaelen/
+source_url: https://www.reddit.com/r/aigamedev/comments/1y0yiwv/i_started_making_an_ageofsail_game_the_day_fable/
+description: An age-of-sail game. Sail, trade, fish and fight across the Shattered Sea, growing from a lone skiff into its master. Single-player, for desktop.
+genre: adventure
+tags: [sailing, trading, naval]
+mobile: false
+# Post title says it was started "the day Fable" came out; which parts are AI is not stated.
+ai: true
+ads: unknown
+purchases: unknown
+stage: playtest
+added: 2026-11-20
